@@ -1,0 +1,30 @@
+{
+    "name": "webforcehq/kubernetes-api",
+    "description": "Kubernetes library for control resources about the kubernetes kluster",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^7.1@dev"        
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5@dev"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Francisco Cortes",
+            "email": "jcortes@webforcehq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "WebforceHQ\\KubernetesApi\\": "src/"
+            
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WebforceHQ\\KubernetesApi\\": "tests/"
+        }
+    }
+}
