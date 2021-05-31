@@ -32,7 +32,7 @@ class RawRequest
             'verify'    => false
         ]);
     }
-    
+
     private function setDefaultHeaders()
     {
         $this->headers = [
@@ -40,7 +40,7 @@ class RawRequest
             'content-type'          => "application/json",
         ];
     }
-    
+
     public function get($endpoint = ""): KubeResponse
     {
         $this->checkEndpoint($endpoint);
@@ -48,7 +48,7 @@ class RawRequest
         return $this->sendRequest();
     }
 
-    public function post($endpoint = "", array $payload): KubeResponse
+    public function post($endpoint = "", array $payload = []): KubeResponse
     {
         $this->checkEndpoint($endpoint);
         $payload = json_encode($payload);
@@ -56,7 +56,7 @@ class RawRequest
         return $this->sendRequest();
     }
 
-    public function put($endpoint = "", array $payload): KubeResponse
+    public function put($endpoint = "", array $payload = []): KubeResponse
     {
         $this->checkEndpoint($endpoint);
         $payload = json_encode($payload);
@@ -64,7 +64,7 @@ class RawRequest
         return $this->sendRequest();
     }
 
-    public function patch($endpoint = "", array $payload): KubeResponse
+    public function patch($endpoint = "", array $payload = []): KubeResponse
     {
         $this->checkEndpoint($endpoint);
         $payload = json_encode($payload);
@@ -98,7 +98,7 @@ class RawRequest
             $responseObj->body      = json_decode($response->getBody()->getContents());
             $responseObj->success   = false;
         }
-            
+
         return $responseObj;
     }
 
