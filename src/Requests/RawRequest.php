@@ -41,10 +41,10 @@ class RawRequest
         ];
     }
 
-    public function get($endpoint = ""): KubeResponse
+    public function get($endpoint = "", array $headers = []): KubeResponse
     {
         $this->checkEndpoint($endpoint);
-        $this->currentRequest = new Request('GET', $this->baseEndpoint.$endpoint, $this->headers);
+        $this->currentRequest = new Request('GET', $this->baseEndpoint.$endpoint, $this->getFinalHeader($headers));
         return $this->sendRequest();
     }
 
@@ -56,19 +56,19 @@ class RawRequest
         return $this->sendRequest();
     }
 
-    public function put($endpoint = "", array $payload = []): KubeResponse
+    public function put($endpoint = "", array $payload = [], array $headers = []): KubeResponse
     {
         $this->checkEndpoint($endpoint);
         $payload = json_encode($payload);
-        $this->currentRequest = new Request('PUT', $this->baseEndpoint.$endpoint, $this->headers, $payload);
+        $this->currentRequest = new Request('PUT', $this->baseEndpoint.$endpoint, $this->getFinalHeader($headers), $payload);
         return $this->sendRequest();
     }
 
-    public function patch($endpoint = "", array $payload = []): KubeResponse
+    public function patch($endpoint = "", array $payload = [], array $headers = []): KubeResponse
     {
         $this->checkEndpoint($endpoint);
         $payload = json_encode($payload);
-        $this->currentRequest = new Request('PATCH', $this->baseEndpoint.$endpoint, $this->headers, $payload);
+        $this->currentRequest = new Request('PATCH', $this->baseEndpoint.$endpoint, $this->getFinalHeader($headers), $payload);
         return $this->sendRequest();
     }
 
@@ -77,6 +77,15 @@ class RawRequest
         $this->checkEndpoint($endpoint);
         $this->currentRequest = new Request('DELETE', $this->baseEndpoint.$endpoint, $this->headers);
         return $this->sendRequest();
+    }
+
+    private function getFinalHeader(array $extraHeader): array
+    {
+        $finalHeader = $this->headers;
+        foreach ($this->headers as $key => $value) {
+            $finalHeader[$key] = $value;
+        }
+        return $finalHeader;
     }
 
     protected function sendRequest(): KubeResponse

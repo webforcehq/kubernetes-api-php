@@ -3,6 +3,7 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
+.env
 
 vendor/
 # Node artifact files
@@ -49,4 +50,3 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
