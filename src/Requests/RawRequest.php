@@ -82,7 +82,7 @@ class RawRequest
     private function getFinalHeader(array $extraHeader): array
     {
         $finalHeader = $this->headers;
-        foreach ($this->headers as $key => $value) {
+        foreach ($extraHeader as $key => $value) {
             $finalHeader[$key] = $value;
         }
         return $finalHeader;
