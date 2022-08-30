@@ -10,9 +10,9 @@ use WebforceHQ\KubernetesApi\Models\ResourceModel;
 class Ingress extends ResourceModel
 {
     use Validations;
-        
+
     protected $kind = "Ingress";
-    protected $apiVersion = "extensions/v1beta1";
+    protected $apiVersion = "networking.k8s.io/v1";
     protected array $spec = [];
     // 'tls'    => null,
     // 'rules'  => null,
@@ -21,7 +21,7 @@ class Ingress extends ResourceModel
     {
         parent::__construct($resourceName);
     }
-    
+
     public function setRules(array $rules)
     {
         $this->allObjectsAreValidClass([IngressRule::class], $rules);
@@ -45,7 +45,7 @@ class Ingress extends ResourceModel
         $this->setSpec($spec);
         return $this;
     }
-    
+
 
     public function generateTlsForEveryDomain()
     {

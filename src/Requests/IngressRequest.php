@@ -8,7 +8,7 @@ use WebforceHQ\KubernetesApi\Requests\Helpers\KubeResponse;
 class IngressRequest extends KubeRequest
 {
     const resource      = "ingresses";
-    const apiVersion    = "extensions/v1beta1";
+    const apiVersion    = "networking.k8s.io/v1";
     const api           = "apis";
 
     public function __construct($token, $baseEndpoint, $namespace)

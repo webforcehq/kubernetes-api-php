@@ -5,9 +5,10 @@ namespace WebforceHQ\KubernetesApi\Models\IngressResources;
 class IngressRulePath
 {
     public $path;
+    public $pathType;
     public $backend = [];
 
- 
+
     /**
      * Set the value of path
      *
@@ -19,7 +20,12 @@ class IngressRulePath
 
         return $this;
     }
-    
+
+    public function setPathType($type)
+    {
+        $this->pathType = $type;
+    }
+
     /**
      * Set the value of path
      *
@@ -27,9 +33,18 @@ class IngressRulePath
      */
     public function setBackend($serviceName, $servicePort)
     {
-        $this->backend['serviceName'] = $serviceName;
-        $this->backend['servicePort'] = $servicePort;
+        $this->backend = [
+            'service' => [
+                'name' => $serviceName,
+                'port' => []
+            ]
+        ];
 
+        if(gettype($servicePort) === 'string') {
+            $this->backend['service']['port']['name']   = $servicePort;
+        } else {
+            $this->backend['service']['port']['number'] = $servicePort;
+        }
         return $this;
     }
 }

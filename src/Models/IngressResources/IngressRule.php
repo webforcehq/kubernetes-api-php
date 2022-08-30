@@ -7,7 +7,7 @@ use WebforceHQ\KubernetesApi\Models\Helpers\Validations;
 class IngressRule
 {
     use Validations;
-    
+
     public $host;
     public $http = [ 'paths' => []];
 
@@ -18,6 +18,11 @@ class IngressRule
      */
     public function setPaths(array $paths)
     {
+        foreach ($paths as &$path) {
+            if(!isset($path["pathType"])) {
+                $path["pathType"] = 'Prefix';
+            }
+        }
         $this->allObjectsAreValidClass([IngressRulePath::class], $paths);
         $this->http['paths'] = $paths;
     }
@@ -34,14 +39,15 @@ class IngressRule
         return $this;
     }
 
-    public function pushPath($path, $serviceName, $servicePort)
+    public function pushPath($path, $serviceName, $servicePort, $pathType = "Prefix")
     {
         $rulePath = new IngressRulePath;
         $rulePath->setPath($path);
+        $rulePath->setPathType($pathType);
         $rulePath->setBackend($serviceName, $servicePort);
         $this->http['paths'][] = $rulePath;
     }
-    
+
 
     /**
      * Get the value of host
