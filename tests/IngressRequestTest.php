@@ -1,6 +1,8 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+namespace WebforceHQ\Tests;
+
+// use PHPUnit\Framework\TestCase;
 use WebforceHQ\KubernetesApi\Example;
 use WebforceHQ\KubernetesApi\KubernetesApiRequest;
 use WebforceHQ\KubernetesApi\Models\Ingress;
@@ -8,10 +10,15 @@ use WebforceHQ\KubernetesApi\Models\IngressResources\IngressRule;
 use WebforceHQ\KubernetesApi\Models\IngressResources\IngressTls;
 use WebforceHQ\KubernetesApi\Requests\IngressRequest;
 
-class IngressRequestTest extends BaseTestCase 
-{     
-    private $ingressName    = "ingress-jfrank";
-    private $sslSecret      = "jfrank-ssl";
+class IngressRequestTest extends BaseTestCase
+{
+    private $ingressName    = "zk8library-api-php-ingress";
+    private $host           = "testing-k8-library.webforcehq.dev";
+    private $sslSecret      = "testing-k8-library-ssl";
+    private $clusterIssuer  = "http-solver-staging";
+    private $serviceName    = "bakery";
+    private $servicePort    = "fastcgi";
+    // private $servicePort    = 9000;
 
     private IngressRequest $api;
 
@@ -19,14 +26,14 @@ class IngressRequestTest extends BaseTestCase
     {
         parent::setUp();
         $request = new KubernetesApiRequest($this->kubernetesEndpoint, $this->token);
-        $this->api = $request->ingressApi();                
+        $this->api = $request->ingressApi();
+        sleep(2);
     }
 
     /** @test */
     function list()
-    {                
+    {
         $response = $this->api->list();
-        // echo json_encode($response->body);
         $this->assertTrue($response->success);
     }
 
@@ -35,19 +42,14 @@ class IngressRequestTest extends BaseTestCase
     {
         $ruleDomain = new IngressRule;
         $ruleDomain
-            ->setHost("jfrank.chickenkiller.com")
-            ->pushPath("/", "hello-v1-svc", 80);
+            ->setHost($this->host)
+            ->pushPath("/", $this->serviceName, $this->servicePort);
 
-        $ruleSubdomain = new IngressRule;
-        $ruleSubdomain
-                ->setHost("*.jfrank.chickenkiller.com")
-                ->pushPath("/", "hello-v1-svc", 80);
-        
+
         $tls = new IngressTls;
         $tls
             ->setHosts([
-                $ruleDomain->getHost(), 
-                "*.". $ruleDomain->getHost()
+                $ruleDomain->getHost(),
             ])
             ->setSecretName($this->sslSecret);
 
@@ -55,14 +57,17 @@ class IngressRequestTest extends BaseTestCase
         $ingress->setAnnotations([
             'nginx.ingress.kubernetes.io/rewrite-target'    => "/",
             'kubernetes.io/ingress.class'                   => "nginx",
-            "cert-manager.io/cluster-issuer"                => "letsencrypt-stage-cluster-issuer"
-        ])        
-        ->setRules([ $ruleDomain, $ruleSubdomain ])
-        ->setTls([$tls]);                        
-                     
-        $response = $this->api->create($ingress);        
+            "cert-manager.io/cluster-issuer"                => $this->clusterIssuer,
+        ])
+        ->setRules([ $ruleDomain ])
+        ->setTls([$tls]);
+
+        $response = $this->api->create($ingress);
+        if(!$response->success) {
+            var_dump($response);
+        }
         $this->assertTrue( $response->success );
-        
+
     }
 
     /** @test */
@@ -70,42 +75,40 @@ class IngressRequestTest extends BaseTestCase
     {
         $ruleDomain = new IngressRule;
         $ruleDomain
-            ->setHost("jfrank.chickenkiller.com")
-            ->pushPath("/", "hello-v1-svc", 80);
- 
+            ->setHost($this->host)
+            ->pushPath("/", $this->serviceName, $this->servicePort);
+
         $tls = new IngressTls;
             $tls->setHosts([
-                $ruleDomain->getHost()                
+                $ruleDomain->getHost()
             ])
             ->setSecretName($this->sslSecret);
 
-        $ingress = new Ingress("ingress-jfrank");
+        $ingress = new Ingress($this->ingressName);
         $ingress->setAnnotations([
             'nginx.ingress.kubernetes.io/rewrite-target'    => "/",
             'kubernetes.io/ingress.class'                   => "nginx",
-            "cert-manager.io/cluster-issuer"                => "letsencrypt-stage-cluster-issuer"
-        ])        
+            "cert-manager.io/cluster-issuer"                => $this->clusterIssuer
+        ])
         ->setRules([ $ruleDomain ])
-        ->setTls([$tls]);                        
-                
+        ->setTls([$tls]);
+
         $response = $this->api->update($ingress);
-        // echo json_encode($response->body);
-        $this->assertTrue($response->success);        
+        $this->assertTrue($response->success);
     }
 
     /** @test */
     function show()
-    {              
+    {
         $response = $this->api->show($this->ingressName);
-        // echo json_encode($response->body);
         $this->assertTrue($response->success);
     }
 
     /** @test */
     function delete()
-    {                            
+    {
         $response = $this->api->destroy($this->ingressName);
         $this->assertTrue($response->success);
     }
-    
+
 }
