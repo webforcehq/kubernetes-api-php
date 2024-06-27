@@ -51,4 +51,19 @@ class Ingress extends ResourceModel
     {
         return $this;
     }
+
+    public function getIngressClassName()
+    {
+        return $this;
+    }
+    public function setIngressClassName(string $ingressClass)
+    {
+        if ($this->getSpec() == null) {
+            $this->setSpec([]);
+        }
+        $spec = $this->getSpec();
+        $spec['ingressClassName'] = $ingressClass;
+        $this->setSpec($spec);
+        return $this;
+    }
 }
